@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Output
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "outDir": "rules",
+    "lib": ["es2015", "dom"]
+  },
+  "include": ["src/*.ts"]
+}
