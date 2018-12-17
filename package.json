@@ -1,0 +1,8 @@
+{
+  "name": "tslint-browser-compat",
+  "version": "0.0.1",
+  "description": "TSLint plugin for type-aware browser compatability linting",
+  "repository": "https://github.com/tjefferson/tslint-browser-compat",
+  "author": "Travis Jefferson <traviscjefferson@gmail.com>",
+  "license": "MIT"
+}
