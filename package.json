@@ -6,7 +6,9 @@
   "author": "Travis Jefferson <traviscjefferson@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "yarn tsc"
+    "compile": "yarn tsc",
+    "pretest": "yarn compile",
+    "test": "tslint --test test/rules/**/*"
   },
   "peerDependencies": {
     "tslint": "^5.11.0",
