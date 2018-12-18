@@ -1,4 +1,7 @@
 language: node_js
+branches:
+  only:
+    - master
 cache:
   directories:
     - node_modules
@@ -6,7 +9,6 @@ notifications:
   email: false
 node_js:
   - "10"
-  - "8"
 before_install:
 before_script:
 script:
