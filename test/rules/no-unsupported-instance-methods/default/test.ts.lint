@@ -4,7 +4,7 @@ const b = Array.of(321);
 document.querySelectorAll('sup').forEach(() => console.log('sup'));
 
 const c = [1, 2, 3].includes(3);
-                    ~~~~~~~~ [Array.prototype.includes is not allowed!]
+          ~~~~~~~~~~~~~~~~~~ [Array.prototype.includes is not allowed!]
 
 window.scrollTo(100, 0);
 

@@ -1,0 +1,3 @@
+// We need a tsconfig.json file in order to supply type information to
+// tslint
+{}
