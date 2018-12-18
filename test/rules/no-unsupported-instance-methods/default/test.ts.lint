@@ -13,5 +13,5 @@ const e = [4, 5, 6];
 const f = e.includes(5);
           ~~~~~~~~~~ [Array.prototype.includes is not allowed!]
 
-
-
+document.querySelectorAll('selector').forEach(() => { console.log('hello') })
+                                      ~~~~~~~ [NodeList.prototype.forEach is not allowed!]
