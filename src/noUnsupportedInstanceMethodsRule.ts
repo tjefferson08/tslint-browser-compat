@@ -22,16 +22,25 @@ export class Rule extends Lint.Rules.TypedRule {
  * compatability data */
 const TYPESCRIPT_TYPE_MDN_MAPPING: {
   [key: string]: {
+    mdnNamespace: string;
     whitelist: {
       [key: string]: boolean;
     };
   };
 } = {
   Array: {
+    mdnNamespace: 'Array',
+
     /* for now, only lint against a known working whitelist of
      * functions */
     whitelist: {
       includes: true
+    }
+  },
+  ArrayConstructor: {
+    mdnNamespace: 'Array',
+    whitelist: {
+      from: true
     }
   }
 };
@@ -61,16 +70,20 @@ function walk(ctx: Lint.WalkContext<void>, checker: ts.TypeChecker) {
         return;
       }
 
+      const mdnNamespace = typeMetadata.mdnNamespace;
+
       const isSupported = isFeatureSupported(
-        { objectType: lhsTsType, functionName: rhsName },
+        { objectType: mdnNamespace, functionName: rhsName },
         { browserName: BROWSER_NAME, version: BROWSER_VERSION }
       );
 
       if (!isSupported) {
-        ctx.addFailureAtNode(
-          node,
-          `${lhsTsType}.prototype.${rhsName} is not allowed!`
-        );
+        const isStaticFunction = lhsTsType !== mdnNamespace;
+        const typeForMessage = isStaticFunction
+          ? `${mdnNamespace}.${rhsName}`
+          : `${mdnNamespace}.prototype.${rhsName}`;
+
+        ctx.addFailureAtNode(node, `${typeForMessage} is not allowed!`);
       }
     }
 

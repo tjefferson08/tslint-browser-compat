@@ -12,6 +12,6 @@ const d = [].includes(0);
 const e = [4, 5, 6];
 const f = e.includes(5);
           ~~~~~~~~~~ [Array.prototype.includes is not allowed!]
-window.scrollTo(100, 0);
+
 
 
