@@ -1,5 +1,5 @@
 const a = Array.from(123);
-
+          ~~~~~~~~~~ [Array.from is not allowed!]
 const b = Array.of(321);
 document.querySelectorAll('sup').forEach(() => console.log('sup'));
 
