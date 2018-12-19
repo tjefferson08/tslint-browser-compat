@@ -1,33 +1,22 @@
 import * as ts from 'typescript';
 import * as Lint from 'tslint';
-import { isFeatureSupported } from './MdnCompatData';
+import { collectIncompatibleBrowsers } from './MdnCompatData';
+import { getLhsType, parseOptions } from './utils';
+import { TYPESCRIPT_TYPE_MDN_MAPPING } from './tsMdnMapping';
 
 const debug = process.env.DEBUG ? console.log : () => {};
 
-type BrowserTarget = {
+export type BrowserTarget = {
   browserName: string;
   version: number;
 };
 
-type Options = {
+export type Options = {
   browserTargets: BrowserTarget[];
 };
 
-const parseOptions = (ruleArgs: any[]): Options => {
-  if (ruleArgs.length === 0) {
-    return {
-      browserTargets: []
-    };
-  }
-
-  const [browserTargetMap] = ruleArgs;
-  return {
-    browserTargets: Object.keys(browserTargetMap).map(browserName => ({
-      browserName,
-      version: browserTargetMap[browserName]
-    }))
-  };
-};
+const messageFor = ({ browserName, version }: BrowserTarget): string =>
+  `${browserName}:${version}`;
 
 export class Rule extends Lint.Rules.TypedRule {
   public applyWithProgram(
@@ -43,51 +32,11 @@ export class Rule extends Lint.Rules.TypedRule {
   }
 }
 
-/* Key is TS type name, value is namespace to look up in MDN
- * compatability data */
-const TYPESCRIPT_TYPE_MDN_MAPPING: {
-  [key: string]: {
-    mdnNamespace: string;
-    whitelist: {
-      [key: string]: boolean;
-    };
-  };
-} = {
-  Array: {
-    mdnNamespace: 'Array',
-
-    /* for now, only lint against a known working whitelist of
-     * functions */
-    whitelist: {
-      includes: true
-    }
-  },
-  ArrayConstructor: {
-    mdnNamespace: 'Array',
-    whitelist: {
-      from: true
-    }
-  },
-  NodeListOf: {
-    mdnNamespace: 'NodeList',
-    whitelist: {
-      forEach: true
-    }
-  },
-  IntersectionObserver: {
-    mdnNamespace: 'IntersectionObserver',
-    whitelist: {
-      observe: true
-    }
-  }
-};
-
 function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
   function callback(nodeObj: ts.Node): void {
     if (nodeObj.kind === ts.SyntaxKind.PropertyAccessExpression) {
       const node = nodeObj as ts.PropertyAccessExpression;
-      const lhsTypeObj = checker.getTypeAtLocation(node.expression);
-      const lhsTsType = lhsTypeObj.symbol && lhsTypeObj.symbol.name;
+      const lhsTsType = getLhsType(node, checker);
 
       if (!lhsTsType) {
         debug(
@@ -105,18 +54,12 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
       }
 
       const mdnNamespace = typeMetadata.mdnNamespace;
+      const incompatibleBrowsers = collectIncompatibleBrowsers(
+        { objectType: mdnNamespace, functionName: rhsName },
+        ctx.options.browserTargets
+      ).map(messageFor);
 
-      const failedBrowserTargets = ctx.options.browserTargets
-        .filter(
-          ({ browserName, version }) =>
-            !isFeatureSupported(
-              { objectType: mdnNamespace, functionName: rhsName },
-              { browserName, version }
-            )
-        )
-        .map(({ browserName, version }) => `${browserName}:${version}`);
-
-      if (failedBrowserTargets.length > 0) {
+      if (incompatibleBrowsers.length > 0) {
         const isStaticFunction = lhsTsType.match(/Constructor$/);
         const typeForMessage = isStaticFunction
           ? `${mdnNamespace}.${rhsName}`
@@ -124,13 +67,43 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
 
         ctx.addFailureAtNode(
           node,
-          `${typeForMessage} is not allowed in browsers: ${failedBrowserTargets.join(
+          `${typeForMessage} is not allowed in browsers: ${incompatibleBrowsers.join(
             ', '
           )}`
         );
       }
     } else if (nodeObj.kind === ts.SyntaxKind.NewExpression) {
-      debug('new exp', nodeObj.getText());
+      const node = nodeObj as ts.NewExpression;
+      const lhsTsType = getLhsType(node, checker);
+      if (!lhsTsType) {
+        debug(
+          `skipping... unable to determine LHS type for exp: ${node.getText()}`
+        );
+        return;
+      }
+
+      const typeMetadata = TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType];
+
+      if (!typeMetadata) {
+        debug(`skipped ${lhsTsType} lookup, it's not on the whitelist`);
+        return;
+      }
+
+      const incompatibleBrowsers = collectIncompatibleBrowsers(
+        { objectType: typeMetadata.mdnNamespace, functionName: null },
+        ctx.options.browserTargets
+      ).map(messageFor);
+
+      if (incompatibleBrowsers.length > 0) {
+        const typeForMessage = `${typeMetadata.mdnNamespace} constructor`;
+
+        ctx.addFailureAtNode(
+          node,
+          `${typeForMessage} is not allowed in browsers: ${incompatibleBrowsers.join(
+            ', '
+          )}`
+        );
+      }
     }
     return ts.forEachChild(nodeObj, callback);
   }
