@@ -4,6 +4,13 @@ import { isFeatureSupported } from './MdnCompatData';
 
 const debug = process.env.DEBUG ? console.log : () => {};
 
+type Options = {
+  [key: string]: number;
+};
+
+const parseOptions = (ruleArgs: any[]): Options =>
+  ruleArgs.length > 0 ? ruleArgs[0] : {};
+
 export class Rule extends Lint.Rules.TypedRule {
   public applyWithProgram(
     sourceFile: ts.SourceFile,
@@ -12,7 +19,7 @@ export class Rule extends Lint.Rules.TypedRule {
     return this.applyWithFunction(
       sourceFile,
       walk,
-      undefined,
+      parseOptions(this.ruleArguments),
       program.getTypeChecker()
     );
   }
@@ -51,10 +58,7 @@ const TYPESCRIPT_TYPE_MDN_MAPPING: {
   }
 };
 
-const BROWSER_NAME = 'ie';
-const BROWSER_VERSION = 11;
-
-function walk(ctx: Lint.WalkContext<void>, checker: ts.TypeChecker) {
+function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
   function callback(nodeObj: ts.Node): void {
     if (nodeObj.kind === ts.SyntaxKind.PropertyAccessExpression) {
       const node = nodeObj as ts.PropertyAccessExpression;
@@ -78,23 +82,26 @@ function walk(ctx: Lint.WalkContext<void>, checker: ts.TypeChecker) {
 
       const mdnNamespace = typeMetadata.mdnNamespace;
 
-      const isSupported = isFeatureSupported(
-        { objectType: mdnNamespace, functionName: rhsName },
-        { browserName: BROWSER_NAME, version: BROWSER_VERSION }
-      );
+      Object.keys(ctx.options).forEach(browserName => {
+        const isSupported = isFeatureSupported(
+          { objectType: mdnNamespace, functionName: rhsName },
+          { browserName, version: ctx.options[browserName] }
+        );
 
-      if (!isSupported) {
-        const isStaticFunction = lhsTsType.match(/Constructor$/);
-        const typeForMessage = isStaticFunction
-          ? `${mdnNamespace}.${rhsName}`
-          : `${mdnNamespace}.prototype.${rhsName}`;
+        if (!isSupported) {
+          const isStaticFunction = lhsTsType.match(/Constructor$/);
+          const typeForMessage = isStaticFunction
+            ? `${mdnNamespace}.${rhsName}`
+            : `${mdnNamespace}.prototype.${rhsName}`;
 
-        ctx.addFailureAtNode(node, `${typeForMessage} is not allowed!`);
-      }
+          ctx.addFailureAtNode(node, `${typeForMessage} is not allowed!`);
+        }
+      });
     }
-
-    return ts.forEachChild(nodeObj, callback);
+    ts.forEachChild(nodeObj, callback);
+    return;
   }
 
-  return ts.forEachChild(ctx.sourceFile, callback);
+  ts.forEachChild(ctx.sourceFile, callback);
+  return;
 }
