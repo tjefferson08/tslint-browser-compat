@@ -1,7 +1,7 @@
 const a = Array.from(123);
           ~~~~~~~~~~ [Array.from is not allowed!]
+
 const b = Array.of(321);
-document.querySelectorAll('sup').forEach(() => console.log('sup'));
 
 const c = [1, 2, 3].includes(3);
           ~~~~~~~~~~~~~~~~~~ [Array.prototype.includes is not allowed!]
@@ -14,4 +14,4 @@ const f = e.includes(5);
           ~~~~~~~~~~ [Array.prototype.includes is not allowed!]
 
 document.querySelectorAll('selector').forEach(() => { console.log('hello') })
-                                      ~~~~~~~ [NodeList.prototype.forEach is not allowed!]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [NodeList.prototype.forEach is not allowed!]

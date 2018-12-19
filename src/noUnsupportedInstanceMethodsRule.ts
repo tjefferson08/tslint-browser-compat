@@ -42,6 +42,12 @@ const TYPESCRIPT_TYPE_MDN_MAPPING: {
     whitelist: {
       from: true
     }
+  },
+  NodeListOf: {
+    mdnNamespace: 'NodeList',
+    whitelist: {
+      forEach: true
+    }
   }
 };
 
@@ -78,7 +84,7 @@ function walk(ctx: Lint.WalkContext<void>, checker: ts.TypeChecker) {
       );
 
       if (!isSupported) {
-        const isStaticFunction = lhsTsType !== mdnNamespace;
+        const isStaticFunction = lhsTsType.match(/Constructor$/);
         const typeForMessage = isStaticFunction
           ? `${mdnNamespace}.${rhsName}`
           : `${mdnNamespace}.prototype.${rhsName}`;
