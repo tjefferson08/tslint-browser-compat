@@ -73,6 +73,12 @@ const TYPESCRIPT_TYPE_MDN_MAPPING: {
     whitelist: {
       forEach: true
     }
+  },
+  IntersectionObserver: {
+    mdnNamespace: 'IntersectionObserver',
+    whitelist: {
+      observe: true
+    }
   }
 };
 
@@ -123,6 +129,8 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
           )}`
         );
       }
+    } else if (nodeObj.kind === ts.SyntaxKind.NewExpression) {
+      debug('new exp', nodeObj.getText());
     }
     return ts.forEachChild(nodeObj, callback);
   }
