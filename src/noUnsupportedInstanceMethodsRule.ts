@@ -4,12 +4,30 @@ import { isFeatureSupported } from './MdnCompatData';
 
 const debug = process.env.DEBUG ? console.log : () => {};
 
-type Options = {
-  [key: string]: number;
+type BrowserTarget = {
+  browserName: string;
+  version: number;
 };
 
-const parseOptions = (ruleArgs: any[]): Options =>
-  ruleArgs.length > 0 ? ruleArgs[0] : {};
+type Options = {
+  browserTargets: BrowserTarget[];
+};
+
+const parseOptions = (ruleArgs: any[]): Options => {
+  if (ruleArgs.length === 0) {
+    return {
+      browserTargets: []
+    };
+  }
+
+  const [browserTargetMap] = ruleArgs;
+  return {
+    browserTargets: Object.keys(browserTargetMap).map(browserName => ({
+      browserName,
+      version: browserTargetMap[browserName]
+    }))
+  };
+};
 
 export class Rule extends Lint.Rules.TypedRule {
   public applyWithProgram(
@@ -82,26 +100,32 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
 
       const mdnNamespace = typeMetadata.mdnNamespace;
 
-      Object.keys(ctx.options).forEach(browserName => {
-        const isSupported = isFeatureSupported(
-          { objectType: mdnNamespace, functionName: rhsName },
-          { browserName, version: ctx.options[browserName] }
+      const failedBrowserTargets = ctx.options.browserTargets
+        .filter(
+          ({ browserName, version }) =>
+            !isFeatureSupported(
+              { objectType: mdnNamespace, functionName: rhsName },
+              { browserName, version }
+            )
+        )
+        .map(({ browserName, version }) => `${browserName}:${version}`);
+
+      if (failedBrowserTargets.length > 0) {
+        const isStaticFunction = lhsTsType.match(/Constructor$/);
+        const typeForMessage = isStaticFunction
+          ? `${mdnNamespace}.${rhsName}`
+          : `${mdnNamespace}.prototype.${rhsName}`;
+
+        ctx.addFailureAtNode(
+          node,
+          `${typeForMessage} is not allowed in browsers: ${failedBrowserTargets.join(
+            ', '
+          )}`
         );
-
-        if (!isSupported) {
-          const isStaticFunction = lhsTsType.match(/Constructor$/);
-          const typeForMessage = isStaticFunction
-            ? `${mdnNamespace}.${rhsName}`
-            : `${mdnNamespace}.prototype.${rhsName}`;
-
-          ctx.addFailureAtNode(node, `${typeForMessage} is not allowed!`);
-        }
-      });
+      }
     }
-    ts.forEachChild(nodeObj, callback);
-    return;
+    return ts.forEachChild(nodeObj, callback);
   }
 
-  ts.forEachChild(ctx.sourceFile, callback);
-  return;
+  return ts.forEachChild(ctx.sourceFile, callback);
 }
