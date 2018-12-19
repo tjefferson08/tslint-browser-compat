@@ -1,0 +1,17 @@
+const a = Array.from(123);
+          ~~~~~~~~~~ [Array.from is not allowed in browsers: ie:11]
+
+const b = Array.of(321);
+
+const c = [1, 2, 3].includes(3);
+          ~~~~~~~~~~~~~~~~~~ [Array.prototype.includes is not allowed in browsers: ie:11, firefox:42]
+
+const d = [].includes(0);
+          ~~~~~~~~~~~ [Array.prototype.includes is not allowed in browsers: ie:11, firefox:42]
+
+const e = [4, 5, 6];
+const f = e.includes(5);
+          ~~~~~~~~~~ [Array.prototype.includes is not allowed in browsers: ie:11, firefox:42]
+
+document.querySelectorAll('selector').forEach(() => { console.log('hello') })
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [NodeList.prototype.forEach is not allowed in browsers: ie:11, firefox:42]

@@ -1,0 +1,6 @@
+{
+  "rulesDirectory": ["../../../../rules"],
+  "rules": {
+    "no-unsupported-instance-methods": [true, { "ie": 11, "firefox": 42 }]
+  }
+}
