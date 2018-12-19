@@ -1,7 +1,8 @@
 const MdnData = require('mdn-browser-compat-data');
 const mdnData: any = MdnData;
 
-type FunctionLookupData = { objectType: string; functionName: string };
+// functionName is null for `new Identifier()` expressions
+type FunctionLookupData = { objectType: string; functionName: string | null };
 type BrowserTarget = { browserName: string; version: number };
 
 /* E.g. look for the Array.from compatabilty entry by passing 'Array'
@@ -9,12 +10,16 @@ type BrowserTarget = { browserName: string; version: number };
 export const query = ({ objectType, functionName }: FunctionLookupData) => {
   try {
     if (mdnData.javascript.builtins[objectType]) {
-      return mdnData.javascript.builtins[objectType][functionName].__compat
-        .support;
+      return functionName === null
+        ? mdnData.javascript.builtins[objectType].__compat.support
+        : mdnData.javascript.builtins[objectType][functionName].__compat
+            .support;
     }
 
     if (mdnData.api[objectType]) {
-      return mdnData.api[objectType][functionName].__compat.support;
+      return functionName === null
+        ? mdnData.api[objectType].__compat.support
+        : mdnData.api[objectType][functionName].__compat.support;
     }
   } catch (_err) {
     throw new Error(
@@ -45,3 +50,11 @@ export const isFeatureSupported = (
 
   return Number(versionAdded) <= version;
 };
+
+export const collectIncompatibleBrowsers = (
+  functionLookupData: FunctionLookupData,
+  browserTargets: BrowserTarget[]
+) =>
+  browserTargets.filter(
+    browserTarget => !isFeatureSupported(functionLookupData, browserTarget)
+  );

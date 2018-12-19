@@ -15,3 +15,7 @@ const f = e.includes(5);
 
 document.querySelectorAll('selector').forEach(() => { console.log('hello') })
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [NodeList.prototype.forEach is not allowed in browsers: ie:11, firefox:42]
+
+const observer = new IntersectionObserver(() => {});
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [IntersectionObserver constructor is not allowed in browsers: ie:11, firefox:42]
+
