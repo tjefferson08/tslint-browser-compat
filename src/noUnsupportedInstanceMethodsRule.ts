@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as Lint from 'tslint';
 import { collectIncompatibleBrowsers } from './MdnCompatData';
 import { getLhsType, parseOptions } from './utils';
-import { TYPESCRIPT_TYPE_MDN_MAPPING } from './tsMdnMapping';
+import { deriveMdnNamespace } from './tsMdnMapping';
 
 const debug = process.env.DEBUG ? console.log : () => {};
 
@@ -46,15 +46,7 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
       }
 
       const rhsName = node.name.escapedText as string;
-      const mdnNamespace =
-        TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType] &&
-        TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType].mdnNamespace;
-
-      if (!mdnNamespace) {
-        debug(`no known MDN namespace for ${lhsTsType}`);
-        return;
-      }
-
+      const mdnNamespace = deriveMdnNamespace(lhsTsType);
       const incompatibleBrowsers = collectIncompatibleBrowsers(
         { objectType: mdnNamespace, functionName: rhsName },
         ctx.options.browserTargets
@@ -83,20 +75,14 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
         return;
       }
 
-      const typeMetadata = TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType];
-
-      if (!typeMetadata) {
-        debug(`skipped ${lhsTsType} lookup, it's not on the whitelist`);
-        return;
-      }
-
+      const mdnNamespace = deriveMdnNamespace(lhsTsType);
       const incompatibleBrowsers = collectIncompatibleBrowsers(
-        { objectType: typeMetadata.mdnNamespace, functionName: null },
+        { objectType: mdnNamespace, functionName: null },
         ctx.options.browserTargets
       ).map(messageFor);
 
       if (incompatibleBrowsers.length > 0) {
-        const typeForMessage = `${typeMetadata.mdnNamespace} constructor`;
+        const typeForMessage = `${mdnNamespace} constructor`;
 
         ctx.addFailureAtNode(
           node,
