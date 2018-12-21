@@ -6,15 +6,30 @@ export const TYPESCRIPT_TYPE_MDN_MAPPING: {
   };
 } = {
   Array: {
-    mdnNamespace: "Array"
+    mdnNamespace: 'Array'
   },
   ArrayConstructor: {
-    mdnNamespace: "Array"
+    mdnNamespace: 'Array'
   },
   NodeListOf: {
-    mdnNamespace: "NodeList"
+    mdnNamespace: 'NodeList'
   },
   IntersectionObserver: {
-    mdnNamespace: "IntersectionObserver"
+    mdnNamespace: 'IntersectionObserver'
   }
+};
+
+export const staticMapLookup = (key: string) =>
+  TYPESCRIPT_TYPE_MDN_MAPPING[key];
+
+export const deriveMdnNamespace = (typescriptType: string) => {
+  if (typescriptType.match(/Constructor$/)) {
+    return typescriptType.replace(/Constructor$/, '');
+  }
+
+  if (typescriptType.match(/Of$/)) {
+    return typescriptType.replace(/Of$/, '');
+  }
+
+  return typescriptType;
 };
