@@ -40,12 +40,13 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
 
       if (!lhsTsType) {
         debug(
-          `skipping... unable to determine LHS type for exp: ${node.getText()}`
+          `skipping... unable to determine LHS type for property access exp: ${node.getText()}`
         );
         return;
       }
 
       const rhsName = node.name.escapedText as string;
+
       const mdnNamespace = deriveMdnNamespace(lhsTsType);
       const incompatibleBrowsers = collectIncompatibleBrowsers(
         { objectType: mdnNamespace, functionName: rhsName },
@@ -70,7 +71,7 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
       const lhsTsType = getLhsType(node, checker);
       if (!lhsTsType) {
         debug(
-          `skipping... unable to determine LHS type for exp: ${node.getText()}`
+          `skipping... unable to determine LHS type for new exp: ${node.getText()}`
         );
         return;
       }

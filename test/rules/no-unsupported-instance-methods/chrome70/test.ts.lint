@@ -6,3 +6,5 @@ const e = [4, 5, 6];
 const f = e.includes(5);
 document.querySelectorAll('selector').forEach(() => { console.log('hello') })
 const observer = new IntersectionObserver(() => {});
+const p = new Promise();
+const r = Promise.resolve();
