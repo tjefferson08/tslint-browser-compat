@@ -3,36 +3,18 @@
 export const TYPESCRIPT_TYPE_MDN_MAPPING: {
   [key: string]: {
     mdnNamespace: string;
-    whitelist: {
-      [key: string]: boolean;
-    };
   };
 } = {
   Array: {
-    mdnNamespace: 'Array',
-
-    /* for now, only lint against a known working whitelist of
-     * functions */
-    whitelist: {
-      includes: true
-    }
+    mdnNamespace: "Array"
   },
   ArrayConstructor: {
-    mdnNamespace: 'Array',
-    whitelist: {
-      from: true
-    }
+    mdnNamespace: "Array"
   },
   NodeListOf: {
-    mdnNamespace: 'NodeList',
-    whitelist: {
-      forEach: true
-    }
+    mdnNamespace: "NodeList"
   },
   IntersectionObserver: {
-    mdnNamespace: 'IntersectionObserver',
-    whitelist: {
-      observe: true
-    }
+    mdnNamespace: "IntersectionObserver"
   }
 };

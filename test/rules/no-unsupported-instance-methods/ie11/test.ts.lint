@@ -2,6 +2,7 @@ const a = Array.from(123);
           ~~~~~~~~~~ [Array.from is not allowed in browsers: ie:11]
 
 const b = Array.of(321);
+          ~~~~~~~~ [Array.of is not allowed in browsers: ie:11]
 
 const c = [1, 2, 3].includes(3);
           ~~~~~~~~~~~~~~~~~~ [Array.prototype.includes is not allowed in browsers: ie:11]

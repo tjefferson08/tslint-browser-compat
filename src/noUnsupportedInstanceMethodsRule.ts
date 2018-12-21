@@ -46,14 +46,15 @@ function walk(ctx: Lint.WalkContext<Options>, checker: ts.TypeChecker) {
       }
 
       const rhsName = node.name.escapedText as string;
-      const typeMetadata = TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType];
+      const mdnNamespace =
+        TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType] &&
+        TYPESCRIPT_TYPE_MDN_MAPPING[lhsTsType].mdnNamespace;
 
-      if (!(typeMetadata && typeMetadata.whitelist[rhsName])) {
-        debug(`skipped ${lhsTsType}.${rhsName}, it's not on the whitelist`);
+      if (!mdnNamespace) {
+        debug(`no known MDN namespace for ${lhsTsType}`);
         return;
       }
 
-      const mdnNamespace = typeMetadata.mdnNamespace;
       const incompatibleBrowsers = collectIncompatibleBrowsers(
         { objectType: mdnNamespace, functionName: rhsName },
         ctx.options.browserTargets
