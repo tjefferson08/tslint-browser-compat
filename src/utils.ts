@@ -26,7 +26,11 @@ export const getLhsType = (
 ): string => {
   const lhsTypeObj = checker.getTypeAtLocation(node.expression);
   const lhsTsType = lhsTypeObj.symbol && lhsTypeObj.symbol.name;
-  return lhsTsType === ts.InternalSymbolName.Type
+
+  // Sometimes there's no "type" of the LHS (AFAICT) so just use the
+  // expression itself, e.g. `Promise` as a type value
+  // TODO: figure out how this works for real!
+  return lhsTsType === undefined || lhsTsType === ts.InternalSymbolName.Type
     ? node.expression.getText()
     : lhsTsType;
 };

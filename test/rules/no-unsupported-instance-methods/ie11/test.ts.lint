@@ -23,3 +23,9 @@ const observer = new IntersectionObserver(() => {});
                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [IntersectionObserver constructor is not allowed in browsers: ie:11]
 observer.observe(element);
 ~~~~~~~~~~~~~~~~ [IntersectionObserver.prototype.observe is not allowed in browsers: ie:11]
+
+const p = new Promise();
+          ~~~~~~~~~~~~~ [Promise constructor is not allowed in browsers: ie:11]
+
+const r = Promise.resolve();
+          ~~~~~~~~~~~~~~~ [Promise.prototype.resolve is not allowed in browsers: ie:11]
