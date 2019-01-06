@@ -46,7 +46,7 @@ export const query = ({
     }
     return {
       type: 'no-mdn-namespace',
-      message: 'No MDN namespace was found for ${objectType}.${functionName}'
+      message: `No MDN namespace was found for ${objectType}.${functionName}`
     };
   } catch (_err) {
     return {
