@@ -5,6 +5,7 @@
   "repository": "https://github.com/tjefferson/tslint-browser-compat",
   "author": "Travis Jefferson <traviscjefferson@gmail.com>",
   "license": "MIT",
+  "main": "tslint-browser-compat",
   "scripts": {
     "compile": "yarn tsc",
     "pretest": "yarn compile",
