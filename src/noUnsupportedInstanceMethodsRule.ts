@@ -1,10 +1,8 @@
 import * as ts from 'typescript';
 import * as Lint from 'tslint';
 import { collectIncompatibleBrowsers } from './MdnCompatData';
-import { getLhsType, parseOptions } from './utils';
+import { debug, getLhsType, parseOptions } from './utils';
 import { deriveMdnNamespace } from './tsMdnMapping';
-
-const debug = process.env.DEBUG ? console.log : () => {};
 
 export type BrowserTarget = {
   browserName: string;

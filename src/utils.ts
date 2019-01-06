@@ -1,6 +1,8 @@
 import * as ts from 'typescript';
 import { Options } from './noUnsupportedInstanceMethodsRule';
 
+export const debug = process.env.DEBUG ? console.log : () => {};
+
 export const toString = (kind: ts.SyntaxKind): string =>
   (<any>ts).SyntaxKind[kind];
 
