@@ -1,6 +1,6 @@
 {
   "rulesDirectory": ["../../../../rules"],
   "rules": {
-    "no-unsupported-instance-methods": [true, { "chrome": 70 }]
+    "no-unsupported-instance-methods": [true, "chrome 70"]
   }
 }

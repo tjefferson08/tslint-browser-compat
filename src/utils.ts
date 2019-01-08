@@ -1,24 +1,27 @@
 import * as ts from 'typescript';
-import { Options } from './noUnsupportedInstanceMethodsRule';
+import { BrowserTarget, Options } from './noUnsupportedInstanceMethodsRule';
 
+import * as browserslist from 'browserslist';
 export const debug = process.env.DEBUG ? console.log : () => {};
 
 export const toString = (kind: ts.SyntaxKind): string =>
   (<any>ts).SyntaxKind[kind];
 
-export const parseOptions = (ruleArgs: any[]): Options => {
+const parseBrowserslistTarget = (browserslistTarget: string): BrowserTarget => {
+  const [browser, version] = browserslistTarget.split(' ');
+  return {
+    browserName: browser,
+    version: Number(version)
+  };
+};
+
+export const transformOptions = (ruleArgs: any[]): Options => {
   if (ruleArgs.length === 0) {
-    return {
-      browserTargets: []
-    };
+    return { browserTargets: [] };
   }
 
-  const [browserTargetMap] = ruleArgs;
   return {
-    browserTargets: Object.keys(browserTargetMap).map(browserName => ({
-      browserName,
-      version: browserTargetMap[browserName]
-    }))
+    browserTargets: browserslist(ruleArgs).map(parseBrowserslistTarget)
   };
 };
 

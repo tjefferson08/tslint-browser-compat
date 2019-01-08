@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as Lint from 'tslint';
 import { collectIncompatibleBrowsers } from './MdnCompatData';
-import { debug, getLhsType, parseOptions } from './utils';
+import { debug, getLhsType,  transformOptions } from './utils';
 import { deriveMdnNamespace } from './tsMdnMapping';
 
 export type BrowserTarget = {
@@ -24,7 +24,7 @@ export class Rule extends Lint.Rules.TypedRule {
     return this.applyWithFunction(
       sourceFile,
       walk,
-      parseOptions(this.ruleArguments),
+      transformOptions(this.ruleArguments),
       program.getTypeChecker()
     );
   }
