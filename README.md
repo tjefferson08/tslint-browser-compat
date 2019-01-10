@@ -14,7 +14,7 @@ Experimental wild-west phase
 {
   "extends": ["tslint-browser-compat"],
   "rules": {
-    "no-unsupported-instance-methods": [true, { "ie": 11 }]
+    "no-unsupported-instance-methods": [true]
   }
 }
 ```
