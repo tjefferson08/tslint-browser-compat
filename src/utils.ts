@@ -16,12 +16,10 @@ const parseBrowserslistTarget = (browserslistTarget: string): BrowserTarget => {
 };
 
 export const transformOptions = (ruleArgs: any[]): Options => {
-  if (ruleArgs.length === 0) {
-    return { browserTargets: [] };
-  }
-
   return {
-    browserTargets: browserslist(ruleArgs).map(parseBrowserslistTarget)
+    browserTargets: browserslist(
+      ruleArgs.length === 0 ? undefined : ruleArgs
+    ).map(parseBrowserslistTarget)
   };
 };
 
