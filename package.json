@@ -19,10 +19,14 @@
     "@types/browserslist": "^4.3.0",
     "@types/node": "^10.12.15",
     "tslint": "^5.11.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.4.5"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "@typescript-eslint/experimental-utils": "1.8.0",
+    "@typescript-eslint/parser": "^1.7.0",
     "browserslist": "^4.3.7",
+    "eslint": "^5.16.0",
     "mdn-browser-compat-data": "^0.0.60"
   }
 }

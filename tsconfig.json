@@ -4,6 +4,7 @@
     "noEmitOnError": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "skipLibCheck": true,
 
     // Output
     "module": "commonjs",
@@ -12,5 +13,6 @@
     "outDir": "rules",
     "lib": ["es2015", "dom"]
   },
-  "include": ["src/*.ts"]
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules"]
 }
